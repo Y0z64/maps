@@ -1,5 +1,11 @@
 import geoViewport from '@mapbox/geo-viewport';
-import Mapbox, { Camera, MapView, offlineManager } from '@rnmapbox/maps';
+import Mapbox, {
+  Camera,
+  RasterSource,
+  RasterLayer,
+  MapView,
+  offlineManager,
+} from '@rnmapbox/maps';
 import React, { useState } from 'react';
 import { Button, Dimensions, TextInput } from 'react-native';
 
@@ -8,6 +14,7 @@ import { BaseExampleProps } from '../common/BaseExamplePropTypes';
 
 const CENTER_COORD: [number, number] = [-73.970895, 40.723279];
 const MAPBOX_VECTOR_TILE_SIZE = 512;
+const STYLE_URL = Mapbox.StyleURL.Satellite;
 
 const OfflineExample = (props: BaseExampleProps) => {
   const [packName, setPackName] = useState('pack-1');
@@ -78,6 +85,13 @@ const OfflineExample = (props: BaseExampleProps) => {
         }}
       />
       <Button
+        title="Remove packs"
+        onPress={async () => {
+          const result = await offlineManager.resetDatabase();
+          console.log('Reset DB done:', result);
+        }}
+      />
+      <Button
         title="Create Pack"
         onPress={() => {
           const { width, height } = Dimensions.get('window');
@@ -90,7 +104,7 @@ const OfflineExample = (props: BaseExampleProps) => {
 
           const options = {
             name: packName,
-            styleURL: Mapbox.StyleURL.Street,
+            styleURL: STYLE_URL,
             bounds: [
               [bounds[0], bounds[1]],
               [bounds[2], bounds[3]],
@@ -111,7 +125,7 @@ const OfflineExample = (props: BaseExampleProps) => {
           );
         }}
       />
-      <MapView style={{ flex: 1 }}>
+      <MapView style={{ flex: 1 }} styleURL={STYLE_URL}>
         <Camera zoomLevel={10} centerCoordinate={CENTER_COORD} />
       </MapView>
     </Page>
